@@ -13,6 +13,8 @@ import time
 import geocoder
 import pandas as pd
 import numpy as np
+
+# variables for emissions calculator
 apple_kg = 0.15
 apple_co2 = 0.3
 banana_kg = 0.12
@@ -24,33 +26,27 @@ carrot_co2 = 0.3
 broccoli_kg = 0.4
 broccoli_co2 = 0.4
 co2_total = 0
+orange_count = 0
+apple_count = 0
+carrot_count = 0
+banana_count = 0
+broc_count = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~ #
-#   display list of items (with cute emojis?) of how many of each thing you have
-
-# lookup emissions values for each item
-# display next to each item
-# display total emissions
-
 # cute reference statistics
 # lookup what's out of season, add a little out of season list somewhere
 # ^^ maybe with alternate veggies to buy
 # have a whole other page displaying, by month, which things are in season
 
-from PIL import Image 
-
-# if 'image_count' not in st.session_state:
-#     st.session_state.image_count = 0
+from PIL import Image
 
 # model params
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 model.conf = 0.25 # NMS confidence threshold
 model.max_det = 100 # maximum number of detections per image
 
-
+#~~~~~~~~~~~~~~~~~ auto city detection~~~~~~~~~~~~~~~~~~~~~#
 g = geocoder.ip('me')
-
 app = Nominatim(user_agent="tutorial")
-
 def get_address_by_location(latitude, longitude, language="en"):
     """This function returns an address as raw from a location
     will repeat until success"""
@@ -62,38 +58,29 @@ def get_address_by_location(latitude, longitude, language="en"):
         return app.reverse(coordinates, language=language).raw
     except:
         return get_address_by_location(latitude, longitude)
-
-# define your coordinates
+# detect city from coordinates
 latitude = g.latlng[0]
 longitude = g.latlng[1]
-# get the address info
 address = get_address_by_location(latitude, longitude)
-# print all returned d
-#print(address)
 current_city = address['address']['city']
 
-# Main page: Inputs
-# shortcodes :apple::earth_americas::shopping_trolley:
-
+# Main page:
 st.title("Welcome to FoodPrint!:apple::shopping_trolley::earth_americas:")
-
 st.subheader("This application calculates the total carbon footprint of your foods in your grocery cart and provides food substitutions to reduce carbon footprint.")
 
-
-# sidebar inputs
-
-image = Image.open(r"C:\Users\ltjth\Documents\GitHub\foodprint\image-removebg-preview (18).png")
+# Sidebar inputs
+image = Image.open(r"logo.png")
 st.sidebar.image(image, caption = None, width = 210, use_column_width = 210)
-
 name = st.sidebar.text_input("What is your name?")
-
 output_name = st.sidebar.write("Hi" + " " +  str(name) + "," +  " " + "welcome to FoodPrint! We will help you calculate the carbon footprint of your food.")
+# Output current time and location
 today = datetime.date.today()
 st.sidebar.markdown('**Time and Location:**')
 st.sidebar.write(current_city)
 st.sidebar.markdown('**Current Date:**')
 st.sidebar.write(str(today))
 
+# ML Stuff
 have_image = False
 uploaded_image = st.sidebar.file_uploader("Upload an image of your grocery cart below:", type = ["png", "jpg", "jpeg"])
 if uploaded_image is not None:
@@ -101,16 +88,19 @@ if uploaded_image is not None:
     filename = uploaded_image.name
     have_image = True
 
+# Run model, compute emissions, display on GUI
 if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my shopping cart?"))):
     
     results = model(food_image)
+    # progress bar that does absolutely nothing but look cool
     my_bar = st.progress(0)
     for percent_complete in range(100):
         time.sleep(0.001)
         my_bar.progress(percent_complete + 1)
     st.success('Thanks for doing your part!', icon="✅")
+
+    # split into two tabular sections
     tab1, tab2 = st.tabs(["Results", "Tips"])
-    img2 = Image.open(r"C:\Users\ltjth\Documents\GitHub\foodprint\example pictures\example annotated_camila.png")
     with tab1:
         # save and display image
         results.save()
@@ -121,16 +111,16 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
         with col1:
             # type and number of foods
             table = results.pandas().xyxy[0]
-            print(table)
-            big_list = table.name.values.tolist()
-            print(big_list)
+            results_list = table.name.values.tolist()
+            print(results_list)
+
+            # emissions calculator stuff
+            # dictionary that will have the amount of each item
+            # the stuff in semicolons are emojis :)
             detected = {':apple:Apples': 0, ':banana:Bananas': 0, ':tangerine:Oranges': 0, ':carrot:Carrots': 0, ':broccoli:Broccoli': 0}
-            orange_count = 0
-            apple_count = 0
-            carrot_count = 0
-            banana_count = 0
-            broc_count = 0
-            for x in big_list:
+
+            # counting each item from the results list that yolo spits out
+            for x in results_list:
                 if x == "orange":
                     orange_count += 1
                     detected[':tangerine:Oranges'] = orange_count
@@ -147,6 +137,9 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
                     broc_count += 1
                     detected[':broccoli:Broccoli'] = broc_count
             print(detected)
+
+            # if item is detected and has nonzero items in the image, do math
+            # total per item = quantity*item avg weight (kgItem)*co2 emissions per item(kgCo2/kgItem)
             if detected[':apple:Apples'] != 0:
                 apple_em = detected[':apple:Apples'] * apple_kg * apple_co2
                 co2_total += apple_em
@@ -162,39 +155,31 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
             elif detected[':broccoli:Broccoli'] != 0:
                 broccoli_em = detected[':broccoli:Broccoli'] * broccoli_kg * broccoli_co2
                 co2_total += broccoli_em
-            print(co2_total)
-            d = {'Item': ["Apples", "Oranges", "Carrots"], "Quantity": [1, 4, 2], "Emissions (kg)": [0.02, 1, .98]}
-            # st.subheader("Estimated carbon emissions of your grocery cart: ")
+
+            # display emissions as a metric because it looks cool
+            # the delta is just a dummy rn, can be made to indicate something
             st.metric(label="kg Co2 Emissions", value=co2_total, delta="GOOD")
             st.write("We detected: ")
+
+            # displays nonzero keys, thus displays items detected
             for i in detected:
                 if detected[i] != 0:
                     st.write(i, detected[i])
-            #df = pd.DataFrame(data=d)
-            #st.table(df)  # Same as st.write(df)
         with col2:
+            # displays image with bounding boxes from yolo
             st.image(result_image)
             os.unlink(image_path)
             os.rmdir('runs/detect/exp')
 
-
-            #for index in table.iterrows():
-            #    print(table['name'][index])
     with tab2:
+        # info about reducing your emissions
+        # this can also include the seasons table, this stuff is just kinda placeholder for now
         st.header("Tips to Reduce Your Food's Carbon Emissions")
         st.subheader("- Eat produce that is in season")
         st.subheader("- Buy Local")
         st.subheader('- Decrease your red meat intake')
         st.markdown('[Learn More](https://ourworldindata.org/food-choice-vs-eating-local "Learn More")',
                     unsafe_allow_html=False)
-
-    #print(result_class)
-    # ^^ right now is just a list of foods
-
-
-
-
-#st.write("Total carbon emissions of your grocery cart:  ")
 
 #st.write("Food Substitutions: ")
 
