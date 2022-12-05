@@ -5,14 +5,15 @@ import torch
 import pandas
 import os
 import cv2
-import PIL.Image
-from PIL import Image
-from geopy.geocoders import Nominatim
-from pprint import pprint
 import time
 import geocoder
 import pandas as pd
 import numpy as np
+
+from PIL import Image
+from geopy.geocoders import Nominatim
+from pprint import pprint
+
 
 # variables for emissions calculator
 apple_kg = 0.15
@@ -31,13 +32,14 @@ apple_count = 0
 carrot_count = 0
 banana_count = 0
 broc_count = 0
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~ #
 # cute reference statistics
 # lookup what's out of season, add a little out of season list somewhere
 # ^^ maybe with alternate veggies to buy
 # have a whole other page displaying, by month, which things are in season
 
-from PIL import Image
 
 # model params
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -65,15 +67,17 @@ address = get_address_by_location(latitude, longitude)
 current_city = address['address']['city']
 
 #~~~~~~~~~~~~~~~~~ GUI ~~~~~~~~~~~~~~~~~~~~~#
-# Main page:
+# Main page
 st.title("Welcome to FoodPrint!:apple::shopping_trolley::earth_americas:")
 st.subheader("This application calculates the total carbon footprint of your foods in your grocery cart and provides food substitutions to reduce carbon footprint.")
 
-# Sidebar inputs
+# Sidebar
 image = Image.open(r"logo.png")
 st.sidebar.image(image, caption = None, width = 210, use_column_width = 210)
 name = st.sidebar.text_input("What is your name?")
-output_name = st.sidebar.write("Hi" + " " +  str(name) + "," +  " " + "welcome to FoodPrint! We will help you calculate the carbon footprint of your food.")
+if name:
+    output_name = st.sidebar.write("Hi " + str(name) + ", welcome to FoodPrint! We will help you calculate the carbon footprint of your food.")
+
 # Output current time and location
 today = datetime.date.today()
 st.sidebar.markdown('**Time and Location:**')
