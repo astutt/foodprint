@@ -1,4 +1,4 @@
 # foodprint
 
 
-- in ./yolo: pip install -qr requirements.txt
+- in ./yolo: pip install -r requirements.txt
