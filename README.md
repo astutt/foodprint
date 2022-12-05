@@ -10,3 +10,5 @@
 ## requirements
 - geopy
 - geocoder
+
+- move to a file later, just listing here for now
