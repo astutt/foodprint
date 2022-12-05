@@ -1,5 +1,6 @@
 
-
+# fruit_kg is the avg weight
+# fruit_co2 is the co2 emission per kg
 apple_kg = 0.15
 apple_co2 = 0.3
 banana_kg = 0.12
@@ -10,11 +11,12 @@ carrot_kg = 0.02
 carrot_co2 = 0.3
 broccoli_kg = 0.4
 broccoli_co2 = 0.4
-
 co2_total = 0
 
+# dictionary with contents of image. can be any data type, just keep it consistent in the conditionals
 detected = {'apples': 2, 'bananas': 2, 'oranges': 2, 'carrots':2, 'broccoli':2}
 
+# conditionals with calcs
 if 'apples' in detected:
     apple_em = detected['apples']*apple_kg*apple_co2
     co2_total += apple_em
@@ -31,5 +33,6 @@ elif 'broccoli' in detected:
     broccoli_em = detected['broccoli']*broccoli_kg*broccoli_co2
     co2_total += broccoli_em
 
+# total emissions :)
 print(co2_total)
 print("kg of CO2")
