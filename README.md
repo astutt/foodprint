@@ -9,7 +9,8 @@
 - [carbon footprint data](https://www.kaggle.com/datasets/selfvivek/environment-impact-of-food-production)
 
 ## requirements
+- torch
+- torchvision
 - geopy
 - geocoder
-
-- move to a file later, just listing here for now
+- (move to a file later, just listing here for now)
