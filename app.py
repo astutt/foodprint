@@ -64,6 +64,7 @@ longitude = g.latlng[1]
 address = get_address_by_location(latitude, longitude)
 current_city = address['address']['city']
 
+#~~~~~~~~~~~~~~~~~ GUI ~~~~~~~~~~~~~~~~~~~~~#
 # Main page:
 st.title("Welcome to FoodPrint!:apple::shopping_trolley::earth_americas:")
 st.subheader("This application calculates the total carbon footprint of your foods in your grocery cart and provides food substitutions to reduce carbon footprint.")
