@@ -1,4 +1,3 @@
-#Load packages
 import streamlit as st
 import datetime
 import torch
@@ -31,14 +30,6 @@ carrot_count = 0
 banana_count = 0
 broc_count = 0
 
-
-# ~~~~~~~~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~ #
-# cute reference statistics
-# lookup what's out of season, add a little out of season list somewhere
-# ^^ maybe with alternate veggies to buy
-# have a whole other page displaying, by month, which things are in season
-
-
 # model params
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 model.conf = 0.25 # NMS confidence threshold
@@ -70,7 +61,7 @@ st.title("Welcome to FoodPrint!:apple::shopping_trolley::earth_americas:")
 st.subheader("This application calculates the total carbon footprint of the food in your grocery cart and compares it to other real world carbon emissions. Keep track of your carbon footprint with Foodprint!")
 
 # Sidebar
-image = Image.open(r"logo.png")
+image = Image.open(r"./gui_images/logo.png")
 st.sidebar.image(image, caption = None, width = 210, use_column_width = 210)
 name = st.sidebar.text_input("What is your name?")
 if name:
@@ -186,14 +177,6 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
         st.subheader('- Decrease your red meat intake')
         st.markdown('[Learn More](https://ourworldindata.org/food-choice-vs-eating-local "Learn More")',
                     unsafe_allow_html=False)
-
-#st.write("Food Substitutions: ")
-
-#month_data = datetime.datetime.strptime(str_date, "%Y-%m-%d")
-#num_month = st.sidebar.write(month_data.month)
-
-#Extracting the month (ex. current date: 2022-12-04 -> outputs: December )
-month_gen= today.strftime("%B")
 
 
 
