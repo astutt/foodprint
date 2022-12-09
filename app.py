@@ -178,6 +178,8 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
         st.markdown('[Learn More](https://ourworldindata.org/food-choice-vs-eating-local "Learn More")',
                     unsafe_allow_html=False)
 
+month_gen= today.strftime("%B")
+
 
 
 
