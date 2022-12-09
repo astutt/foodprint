@@ -1,10 +1,8 @@
+#Load packages
 import streamlit as st
-import PIL
 import datetime
 import torch
-import pandas
 import os
-import cv2
 import time
 import geocoder
 import pandas as pd
@@ -69,7 +67,7 @@ current_city = address['address']['city']
 #~~~~~~~~~~~~~~~~~ GUI ~~~~~~~~~~~~~~~~~~~~~#
 # Main page
 st.title("Welcome to FoodPrint!:apple::shopping_trolley::earth_americas:")
-st.subheader("This application calculates the total carbon footprint of your foods in your grocery cart and provides food substitutions to reduce carbon footprint.")
+st.subheader("This application calculates the total carbon footprint of the food in your grocery cart and compares it to other real world carbon emissions. Keep track of your carbon footprint with Foodprint!")
 
 # Sidebar
 image = Image.open(r"logo.png")
@@ -164,8 +162,11 @@ if ((have_image==True) & (st.sidebar.button("What's the carbon footprint of my s
             # display emissions as a metric because it looks cool
             # the delta is just a dummy rn, can be made to indicate something
             st.metric(label="kg Co2 Emissions", value=co2_total, delta="GOOD")
+            # compare your emissions to something in the real world! Aka driving a car 1 mile = 0.034 kg of carbon emissions
+            drive = round((co2_total/0.034), 2)
+            st.write("This is equal to driving :car: ", str(drive), "miles")
+            
             st.write("We detected: ")
-
             # displays nonzero keys, thus displays items detected
             for i in detected:
                 if detected[i] != 0:
