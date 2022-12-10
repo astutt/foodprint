@@ -1,5 +1,5 @@
 # foodprint :apple:
-
+To run the app, run app.py locally.
 
 ## references
 - [ultralytics yolo repo](https://github.com/ultralytics/yolov5)
