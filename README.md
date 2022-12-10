@@ -9,8 +9,4 @@
 - [carbon footprint data](https://www.kaggle.com/datasets/selfvivek/environment-impact-of-food-production)
 
 ## requirements
-- torch
-- torchvision
-- geopy
-- geocoder
-- (move to a file later, just listing here for now)
+Use the requirements.txt file for the required libraries you need to install to run our code
